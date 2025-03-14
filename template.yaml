@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  DatabaseHost:
+    Type: String
+  DatabasePort:
+    Type: String
+  DatabaseUser:
+    Type: String
+  DatabasePassword:
+    Type: String
+  DatabaseName:
+    Type: String
+  S3DocumentsBucket:
+    Type: String
+
+Globals:
+  Function:
+    Timeout: 120
+    MemorySize: 128
+    Runtime: python3.10
+    Environment:
+      Variables:
+        DATABASE_USER: !Ref DatabaseUser
+        DATABASE_PASSWORD: !Ref DatabasePassword
+        DATABASE_DATABASE: !Ref DatabaseName
+        DATABASE_PORT: !Ref DatabasePort
+        DATABASE_HOST: !Ref DatabaseHost
+        S3_DOCUMENTS_BUCKET: !Ref S3DocumentsBucket
+        LOG_LEVEL: INFO
+    Tags:
+      LambdaPowertools: python
+
+Resources:
+
+  # =============== LAMBDA FUNCTIONS ==============
+
+  StoreUserInputToS3Lambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handler.lambda_handler
+      CodeUri: src/lambdas/store_input_to_bucket/
+      Events:
+        DocumentToStoreEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt DocumentToStoreQueue.Arn
+            BatchSize: 10
+
+  APIEndpointsHandlerLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handler.lambda_handler
+      CodeUri: src/lambdas/api_endpoints/
+      Events:
+        AnyApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref APIGateway
+            Path: /{proxy+}
+            Method: ANY
+
+  # ====================== S3 =====================
+
+  S3DocumentsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3DocumentsBucket
+
+  # ================== SQS & SNS ==================
+
+  DocumentToStoreQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: "DocumentToStoreQueue"
+      VisibilityTimeout: 120
+
+  # ===================== API =====================
+
+  APIGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: "api-gateway"
+      StageName: 'local'
+
+Outputs:
+  ListAllCustomers:
+    Description: The endpoint to show all existing customers in the system.
+    Value: !Sub 'GET https://${APIGateway}.execute-api.localhost.localstack.cloud:4566/local/customer/'
+  GetCustomer:
+    Name:
+    Description: The endpoint to return a specific customer by id.
+    Value: !Sub 'GET https://${APIGateway}.execute-api.localhost.localstack.cloud:4566/local/customer/<id>/'
+  CreateCustomer:
+    Description: The endpoint to create a new customer in the system.
+    Value: !Sub 'POST https://${APIGateway}.execute-api.localhost.localstack.cloud:4566/local/customer/'
+  ListAllDocuments:
+    Description: The endpoint to show all stored documents' keys in the S3 bucket.
+    Value: !Sub 'GET https://${APIGateway}.execute-api.localhost.localstack.cloud:4566/local/document/'
+  GetDocument:
+    Description: The endpoint to store document's content by key.
+    Value: !Sub 'GET https://${APIGateway}.execute-api.localhost.localstack.cloud:4566/local/customer/<key>/'
+  StoreDocumentQueueURL:
+    Description: The SQS queue URL for storing documents.
+    Value: !Ref DocumentToStoreQueue

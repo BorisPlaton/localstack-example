@@ -1,0 +1,5 @@
+venv/
+localstack_example.egg-ingo/
+__pycache__/
+.aws-sam/
+.idea/

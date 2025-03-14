@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+
+  database:
+    image: "postgres:16.2"
+    environment:
+      - "POSTGRES_USER=${POSTGRES_USER}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+      - "POSTGRES_DB=${POSTGRES_DB}"
+    ports:
+      - "${DOCKER_POSTGRES_PORT_EXPOSE}:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d postgres" ]
+      interval: 1s
+      timeout: 10s
+      retries: 15
+
+  localstack:
+    image: localstack/localstack:3.6.0
+    ports:
+      - "${DOCKER_LOCALSTACK_GATEWAY_PORT_EXPOSE}:4566"
+      - "${DOCKER_LOCALSTACK_EXTERNAL_SERVICES_PORT_RANGE_EXPOSE}:4510-4559"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  database-data:

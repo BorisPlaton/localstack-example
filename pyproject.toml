@@ -1,0 +1,23 @@
+[project]
+name = "localstack-example"
+readme = 'README.md'
+version = "0.0.1"
+description = "Example application with Localstack, AWS lambdas, S3, and database."
+requires-python = "==3.10"
+dependencies = [
+    "pydantic-settings",
+    "pydantic",
+    "aws-lambda-powertools",
+]
+
+[project.optional-dependencies]
+api_endpoints_lambda = [
+    "psycopg2-binary",
+]
+local = [
+    "psycopg2-binary",
+    "yoyo-migrations",
+    "aws-sam-cli-local",
+    "awscli-local",
+    "ipython",
+]
