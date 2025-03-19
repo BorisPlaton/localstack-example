@@ -7,6 +7,7 @@ aws-lambda-powertools==3.8.0
 aws-sam-cli==1.135.0
 aws-sam-cli-local==1.70.0
 aws-sam-translator==1.95.0
+awscli==1.38.11
 awscli-local==0.22.0
 binaryornot==0.4.4
 blinker==1.9.0
@@ -21,11 +22,13 @@ chardet==5.2.0
 charset-normalizer==3.4.1
 chevron==0.14.0
 click==8.1.8
+colorama==0.4.6
 cookiecutter==2.6.0
 cryptography==44.0.2
 dateparser==1.2.1
 decorator==5.2.1
 docker==7.1.0
+docutils==0.16
 exceptiongroup==1.2.2
 executing==2.2.0
 flask==3.1.0
@@ -67,6 +70,7 @@ prompt-toolkit==3.0.50
 psycopg2-binary==2.9.10
 ptyprocess==0.7.0
 pure-eval==0.2.3
+pyasn1==0.6.1
 pycparser==2.22
 pydantic==2.10.6
 pydantic-core==2.27.2
@@ -83,6 +87,7 @@ regex==2024.11.6
 requests==2.32.3
 rich==13.9.4
 rpds-py==0.23.1
+rsa==4.7.2
 ruamel-yaml==0.18.10
 ruamel-yaml-clib==0.2.12
 s3transfer==0.11.4

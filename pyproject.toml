@@ -18,6 +18,7 @@ local = [
     "psycopg2-binary",
     "yoyo-migrations",
     "aws-sam-cli-local",
+    "awscli",
     "awscli-local",
     "ipython",
 ]
