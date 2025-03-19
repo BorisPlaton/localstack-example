@@ -68,7 +68,7 @@ Resources:
     Properties:
       BucketName: !Ref S3DocumentsBucket
 
-  # ================== SQS & SNS ==================
+  # ================== SQS ==================
 
   DocumentToStoreQueue:
     Type: AWS::SQS::Queue

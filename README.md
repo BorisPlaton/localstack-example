@@ -94,7 +94,7 @@ Here is a complete description of these variables:
 
 ### Scripts
 
-The `.env.local` file also has a bunch of scripts that are used during development & local deployment. Let's take at look on them:
+The `.env.local` file also has a bunch of scripts that are used during development & local deployment. Let's take a look at them:
 ```shell
 # ==== DEVELOPMENT SCRIPTS
 new-migration-file() (
@@ -140,7 +140,7 @@ Scripts do the following things:
 
 Firstly, make preparations that are in the [Setup](#Setup).
 
-Start application locally calling the `app-up` command. Before this, load `.env.local` file to your shell:
+Start the application locally by calling the `app-up` command. Before this, load the `.env.local` file to your shell:
 ```shell
 $ source .env.local
 $ app-up
@@ -150,32 +150,32 @@ Probably, it will take some time. Wait until the command is finished.
 Finally, you will see the following output in your terminal:
 ![1.png](./img/1.png)
 
-These output shows available endpoints that you can use to interact with the application.
+This output shows available endpoints that you can use to interact with the application.
 
 Let's send some requests and see how it works.
 
-In the examples below, specify your endpoints, because they will differ from those, that are on the screen above.
+In the examples below, specify your endpoints because they will differ from those on the screen above.
 
 ### Documents
 
-The documents endpoints provides functionality to create and retrieve documents from the S3 bucket.
+The document endpoints provide functionality to create and retrieve documents from the S3 bucket.
 
 The picture above provides several endpoints for interaction with documents in our system.
 
-Let's see what documents exist. Execute the following command (replace actual endpoint with yours):
+Let's see what documents exist. Execute the following command (replace the actual endpoint with yours):
 ```shell
 $ curl https://rkxhafng0t.execute-api.localhost.localstack.cloud:4566/local/document/
 []
 ```
 
-The output will be an empty list. Because we haven't stored any document yet, the output is the empty list.
+The output will be an empty list. Because we haven't stored any documents yet, the output is the empty list.
 
 Let's fix this and create a new one:
 ```shell
 $ awslocal sqs send-message --queue-url http://sqs.us-west-2.localhost.localstack.cloud:4566/000000000000/DocumentToStoreQueue --message-body '{"key": "key", "content": "hello world!"}'
 ```
 
-This command pushes a new event to the SQS queue that is being "listened" by the AWS lambda function. When queue receives a new event, it triggers
+This command pushes a new event to the SQS queue that is being "listened" by the AWS lambda function. When the queue receives a new event, it triggers
 the lambda function that processes the event.
 
 After you execute the command above, you will receive a message similar to this one:
@@ -186,12 +186,12 @@ After you execute the command above, you will receive a message similar to this 
 }
 ```
 
-If you run the `docker ps`, you will see that new docker container have appeared:
+If you run the `docker ps` you will see that a new docker container has appeared:
 ![2.png](./img/2.png)
 
-It is a new lambda container that handles logic of storing a document to the S3 by the key that you've provided and content that you've specified.
+It is a new lambda container that handles the logic of storing a document to the S3 by the key that you've provided and the content that you've specified.
 
-Let's verify that document actually is being stored:
+Let's verify that the document actually is being stored:
 ```shell
 $ curl https://rkxhafng0t.execute-api.localhost.localstack.cloud:4566/local/document/
 ["key"]
@@ -205,16 +205,15 @@ hello world!
 
 The response shows the same string that you've specified for the document under `key`.
 
-Here is a diagram of the flow, how it works:
-
+Here is a diagram of the flow, and how it works:
 ![4.png](./img/4.png)
 
 
 ### Customers
 
-The next part of the application is focused on customers management and storing them in the database.
+The next part of the application is focused on customer management and storing them in the database.
 
-Let's create a new customer, by executing this command:
+Let's create a new customer by executing this command:
 ```shell
 $ curl -X POST -H "Content-Type: application/json" -d '{"first_name": "John", "last_name": "Wick"}' https://rkxhafng0t.execute-api.localhost.localstack.cloud:4566/local/customer/
 null
@@ -234,9 +233,9 @@ $ curl https://rkxhafng0t.execute-api.localhost.localstack.cloud:4566/local/cust
 ]
 ```
 
-Great! The customer is actually stored, and we can see it in customers list.
+Great! The customer is stored, and we can see it in the customers list.
 
-We have additional endpoint, to retrieve information only about a specific customer. We specify `id` in the end to retrieve information about a specific user:
+We have an additional endpoint, to retrieve information only about a specific customer. We specify `id` in the end to retrieve information about a specific user:
 ```shell
 $ curl https://rkxhafng0t.execute-api.localhost.localstack.cloud:4566/local/customer/1/
 {
@@ -246,15 +245,15 @@ $ curl https://rkxhafng0t.execute-api.localhost.localstack.cloud:4566/local/cust
 }
 ```
 
-If we specify non-existing `id` we will receive the following output:
+If we specify a non-existing `id` we will receive the following output:
 ```shell
 $ curl https://rkxhafng0t.execute-api.localhost.localstack.cloud:4566/local/customer/2/
 null
 ```
 
-So, an infrastructure, that is managed by the LocalStack can also communicate with external microservices, that are in the same network.
+So, an infrastructure that is managed by the LocalStack can also communicate with external microservices that are in the same network.
 
-As you remember, lambdas are created dynamically as a new docker containers, and they are connected to the same network, where LocalStack is.
+As you remember, lambdas are created dynamically as a new docker container, and they are connected to the same network where LocalStack is.
 
 Here is a diagram of this workflow:
 ![5.png](./img/5.png)
@@ -262,12 +261,20 @@ Here is a diagram of this workflow:
 
 ## AWS SAM
 
-You can interact with LocalStack in various ways: common CLI commands, from web UI, etc.
+You can interact with LocalStack in various ways: common CLI commands, web UI, etc.
 
-In this project, we use AWS solution to describe our AWS infrastructure as code - AWS SAM.
+In this project, we use an AWS solution to describe our AWS infrastructure as code - AWS SAM.
 
-Basically, you describe your infrastructure in some `.yaml` file and all the remaining work is done under the hood by the `sam` cli.
+Basically, you describe your infrastructure in some `.yaml` file, and all the remaining work is done under the hood by the `sam` cli.
 
-Because LocalStack emulates AWS environment locally, you can also describe your infrastructure by this tool and deploy it to the LocalStack.
+Because LocalStack emulates the AWS environment locally, you can also describe your infrastructure with this tool and deploy it to the LocalStack.
 
-Take a look at [template.yaml](template.yaml) file to see how we describe our application.
+Look at [template.yaml](template.yaml) file to see how we describe our application.
+
+## AWS Lambdas
+
+Our lambdas are stored in the [src/lambdas](./src/lambdas) folder. We've created two lambda functions that handle
+the application logic.
+
+We point to them from the `template.yaml` file. so AWS SAM knows how to build our lambdas and where to seek lambdas
+source code.
